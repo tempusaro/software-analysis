@@ -1,0 +1,16 @@
+version: '1'
+services:
+  main:
+    build: .
+    command: tail -f /dev/null
+    volumes: 
+      - ./files:/root/files/
+    environment:
+      #- PATH=klee/tools/ktest-tool/
+      #- PATH=klee/tools/klee-stats/
+      - DISPLAY=novnc:0.0
+    networks:
+      - x11
+    hostname: uvacs
+networks:
+  x11:
