@@ -7,7 +7,7 @@ done < tests.csv
 
 for i in `seq 1 ${#test[@]}`
 do
-    if ./tcas  ${test[$i-1]} | grep -q "${result[$i-1]/ /}"; then
+    if ./tcas$1  ${test[$i-1]} | grep -q "${result[$i-1]/ /}"; then
         echo $i:P
         :
     else
