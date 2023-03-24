@@ -3,6 +3,14 @@ FROM ubuntu:18.04
 # Set the work directory 
 WORKDIR /root
 
+# Stop questions about geography
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Etc/UT
+
+# enable man pages
+RUN sed -i 's:^path-exclude=/usr/share/man:#path-exclude=/usr/share/man:' \
+        /etc/dpkg/dpkg.cfg.d/excludes
+
 # Minimal setup
 RUN apt-get update && \
     apt-get install -y \
@@ -14,11 +22,14 @@ RUN apt-get update && \
     wget \
     vim \
     man \
+    manpages-posix \
     python3 \
-    python3-pip
+    python3-pip \
+    tzdata \
+    dnsutils \ 
+    cmake \ 
+    curl 
 
-# Stop questions about geography
-ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg-reconfigure locales
 
 
@@ -28,27 +39,37 @@ RUN apt-get update && \
     afl \
     afl-cov \
     lcov \
-    gcc \
-    cppcheck 
+    gcc 
+    #cppcheck 
 
 
-# infer 
-RUN wget https://github.com/facebook/infer/releases/download/v1.1.0/infer-linux64-v1.1.0.tar.xz && \
-    tar -xf infer-linux64-v1.1.0.tar.xz && \
-    rm infer-linux64-v1.1.0.tar.xz && \ 
+# infer (versions >=1 require newer glibc that isn't compatible with building tcc) 
+RUN wget https://github.com/facebook/infer/releases/download/v0.17.0/infer-linux64-v0.17.0.tar.xz && \
+    tar -xf infer-linux64-v*.tar.xz && \
+    rm infer-linux64-v*.tar.xz && \ 
     mv infer-* infer 
 
-# tcc
-RUN git clone git://repo.or.cz/tinycc.git && \
-    cd tinycc && \
-    ./configure --prefix=/root/tcc-cov --extra-cflags="-fprofile-arcs -ftest-coverage" --extra-ldflags="-coverage" && \
-    make && \
-    #make test && \ i
-    make install 
+# cppcheck (repo/oss version doesn't have `--bug-hunting`)
+RUN wget https://www.cs.virginia.edu/~rm5tx/6888/cppc.tar.gz && \
+    tar -xzf cppc.tar.gz && \
+    rm cppc.tar.gz && \
+    cd cppcheck && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    cmake --build . && \
+    mkdir /usr/local/share/Cppcheck && \
+    cp -r /root/cppcheck/build/bin/* /usr/local/share/Cppcheck
 
-#0 9.962 ./tcc2: symbol lookup error: ./libtcc2.so: undefined symbol: __gcov_merge_add
-#0 9.963 make[2]: *** [dlltest] Error 127
-#0 9.963 Makefile:157: recipe for target 'dlltest' failed
+## tcc
+#RUN git clone git://repo.or.cz/tinycc.git && \
+#    cd tinycc && \
+#    ./configure --prefix=/root/tcc-cov --extra-cflags="-fprofile-arcs -ftest-coverage" --extra-ldflags="-coverage" && \
+#    make && \
+#    #make test && \ i
+#    make install 
+
+
 
 
 

@@ -7,6 +7,8 @@ services:
     environment:
       #- PATH=klee/tools/ktest-tool/
       #- PATH=klee/tools/klee-stats/
+      #- PATH=$PATH
+      - PATH=/root/infer/bin:/root/cppcheck/build/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - DISPLAY=novnc:0.0
     networks:
       - x11
