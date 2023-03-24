@@ -5,7 +5,7 @@ WORKDIR /root
 
 # Stop questions about geography
 ARG DEBIAN_FRONTEND=noninteractive
-ARG TZ=Etc/UT
+ARG TZ=Etc/UTC
 
 # enable man pages
 RUN sed -i 's:^path-exclude=/usr/share/man:#path-exclude=/usr/share/man:' \
