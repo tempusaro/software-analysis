@@ -61,25 +61,6 @@ RUN wget https://www.cs.virginia.edu/~rm5tx/6888/cppc.tar.gz && \
     mkdir /usr/local/share/Cppcheck && \
     cp -r /root/cppcheck/build/bin/* /usr/local/share/Cppcheck
 
-## tcc
-#RUN git clone git://repo.or.cz/tinycc.git && \
-#    cd tinycc && \
-#    ./configure --prefix=/root/tcc-cov --extra-cflags="-fprofile-arcs -ftest-coverage" --extra-ldflags="-coverage" && \
-#    make && \
-#    #make test && \ i
-#    make install 
-
-
-
-
-
-# KLEE
-#RUN git clone https://github.com/klee/klee.git && \ 
-#    cd klee && \
-#    BASE=$HOME/klee_deps COVERAGE=0 ENABLE_DOXYGEN=0 USE_TCMALLOC=1 LLVM_VERSION=11 ENABLE_OPTIMIZED=1 ENABLE_DEBUG=0 DISABLE_ASSERTIONS=1 REQUIRES_RTTI=1 SOLVERS=STP:Z3 GTEST_VERSION=1.11.0 UCLIBC_VERSION=klee_0_9_29 TCMALLOC_VERSION=2.9.1 SANITIZER_BUILD= STP_VERSION=master MINISAT_VERSION=master Z3_VERSION=4.8.15 USE_LIBCXX=1 KLEE_RUNTIME_BUILD="Debug+Asserts" ./scripts/build/build.sh klee --install-system-deps
-
-
-
 # https://github.com/AlexandreCarlton/afl-docker/blob/master/Dockerfile
 # We set AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES and AFL_SKIP_CPUFREQ
 # since we cannot respectively do without sudo privileges:
@@ -91,3 +72,33 @@ ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1 \
     AFL_SKIP_CPUFREQ=1 \
     CC=afl-gcc \
     CXX=afl-g++
+
+### tcc
+RUN git clone git://repo.or.cz/tinycc.git && \
+    cd tinycc && \
+    git checkout d348a9a51d32cece842b7885d27a411436d7887b && \
+    ./configure --prefix=/root/tcc && \
+    make CC=afl-gcc && \
+    #make test && \
+    make install && \
+    cd .. && \
+    rm -r tinycc
+
+## tcc with coverage support
+RUN git clone git://repo.or.cz/tinycc.git && \
+    cd tinycc && \
+    git checkout d348a9a51d32cece842b7885d27a411436d7887b && \
+    ./configure --prefix=/root/tcc-cov --extra-cflags="-fprofile-arcs -ftest-coverage" --extra-ldflags="-coverage" && \
+    make CC=afl-gcc && \
+    #make test && \ 
+    make install 
+
+
+
+# KLEE
+#RUN git clone https://github.com/klee/klee.git && \ 
+#    cd klee && \
+#    BASE=$HOME/klee_deps COVERAGE=0 ENABLE_DOXYGEN=0 USE_TCMALLOC=1 LLVM_VERSION=11 ENABLE_OPTIMIZED=1 ENABLE_DEBUG=0 DISABLE_ASSERTIONS=1 REQUIRES_RTTI=1 SOLVERS=STP:Z3 GTEST_VERSION=1.11.0 UCLIBC_VERSION=klee_0_9_29 TCMALLOC_VERSION=2.9.1 SANITIZER_BUILD= STP_VERSION=master MINISAT_VERSION=master Z3_VERSION=4.8.15 USE_LIBCXX=1 KLEE_RUNTIME_BUILD="Debug+Asserts" ./scripts/build/build.sh klee --install-system-deps
+
+
+

@@ -1,1 +1,1 @@
-/root/files/hw1/tcc-0.9.27/tcc -I /root/files/hw1/tcc-0.9.27/include -o hello @@
+/root/tcc/bin/tcc -I /root/tcc/include -o hello @@
