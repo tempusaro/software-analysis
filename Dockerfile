@@ -77,3 +77,17 @@ RUN wget https://www.cs.virginia.edu/~rm5tx/6888/cppc.tar.gz && \
 #RUN git clone https://github.com/klee/klee.git && \ 
 #    cd klee && \
 #    BASE=$HOME/klee_deps COVERAGE=0 ENABLE_DOXYGEN=0 USE_TCMALLOC=1 LLVM_VERSION=11 ENABLE_OPTIMIZED=1 ENABLE_DEBUG=0 DISABLE_ASSERTIONS=1 REQUIRES_RTTI=1 SOLVERS=STP:Z3 GTEST_VERSION=1.11.0 UCLIBC_VERSION=klee_0_9_29 TCMALLOC_VERSION=2.9.1 SANITIZER_BUILD= STP_VERSION=master MINISAT_VERSION=master Z3_VERSION=4.8.15 USE_LIBCXX=1 KLEE_RUNTIME_BUILD="Debug+Asserts" ./scripts/build/build.sh klee --install-system-deps
+
+
+
+# https://github.com/AlexandreCarlton/afl-docker/blob/master/Dockerfile
+# We set AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES and AFL_SKIP_CPUFREQ
+# since we cannot respectively do without sudo privileges:
+#   echo core >/proc/sys/kernel/core_pattern
+# and
+#   cd /sys/devices/system/cpu
+#   echo performance | tee cpu*/cpufreq/scaling_governor
+ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1 \
+    AFL_SKIP_CPUFREQ=1 \
+    CC=afl-gcc \
+    CXX=afl-g++
